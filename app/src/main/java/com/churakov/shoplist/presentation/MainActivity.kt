@@ -14,10 +14,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         val viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        viewModel.shopList.observe(this){
+        viewModel.shopListChanged.observe(this){
             Log.d(TAG, it.toString())
         }
-        viewModel.getShopList()
 
         viewModel.removeShopItem(0)
         viewModel.editShopItem(ShopItem("v1", "1", true, 1))
