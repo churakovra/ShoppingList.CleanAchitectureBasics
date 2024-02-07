@@ -1,7 +1,7 @@
 package com.churakov.shoplist.domain
 
-class GetShopItemUseCase {
-    fun getShopItem(id: Int): ShopItem{
-        TODO()
+class GetShopItemUseCase(private val shopListRepository: ShopListRepository) {
+    fun getShopItem(id: Int): ShopItem {
+        return shopListRepository.getShopItem(id)
     }
 }
