@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">ShoppingList</string>
     <string name="floating_button_descr">button that opens new screen to add new item is shopping list</string>
+    <string name="recycled">recycled</string>
 </resources>

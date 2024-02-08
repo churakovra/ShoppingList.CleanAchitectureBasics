@@ -32,6 +32,15 @@ class MainActivity : AppCompatActivity() {
         val rvShopList = findViewById<RecyclerView>(R.id.shopListRecyclerView)
         shopListAdapter = ShopListAdapter()
         rvShopList.adapter = shopListAdapter
+        //change recycler view pool max size
+        rvShopList.recycledViewPool.setMaxRecycledViews(
+            ShopListAdapter.VIEW_TYPE_ENABLED,
+            ShopListAdapter.MAX_POOL_SIZE
+        )
+        rvShopList.recycledViewPool.setMaxRecycledViews(
+            ShopListAdapter.VIEW_TYPE_DISABLED,
+            ShopListAdapter.MAX_POOL_SIZE
+        )
     }
 
     companion object{
