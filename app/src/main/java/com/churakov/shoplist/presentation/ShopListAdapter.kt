@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.churakov.shoplist.R
@@ -19,7 +20,9 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopListViewHolder>
             notifyDataSetChanged()
         }
 
-    var count = 0
+    private var count = 0
+    var onShopItemLongClickListener: ((ShopItem) -> Unit)? = null
+    var onShopItemClickListener: ((ShopItem) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShopListViewHolder {
         Log.d("adapterLog", "${count++}")
@@ -40,7 +43,13 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopListViewHolder>
         holder.tvAmount.text = shopListItem.amount
 
         holder.itemView.setOnLongClickListener {
+            onShopItemLongClickListener?.invoke(shopListItem)
+                ?: throw RuntimeException(ON_SHOP_ITEM_LONG_CLICK_LISTENER_ERROR)
             true
+        }
+        holder.itemView.setOnClickListener {
+            onShopItemClickListener?.invoke(shopListItem)
+                ?: throw RuntimeException(ON_SHOP_ITEM_CLICK_LISTENER_ERROR)
         }
     }
 
@@ -69,5 +78,8 @@ class ShopListAdapter : RecyclerView.Adapter<ShopListAdapter.ShopListViewHolder>
         const val VIEW_TYPE_DISABLED = -1
 
         const val MAX_POOL_SIZE = 10
+
+        const val ON_SHOP_ITEM_LONG_CLICK_LISTENER_ERROR = "onShopItemLongClickListener == null"
+        const val ON_SHOP_ITEM_CLICK_LISTENER_ERROR = "onShopItemClickListener == null"
     }
 }
