@@ -1,9 +1,8 @@
 package com.churakov.shoplist.presentation
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import androidx.core.view.get
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -23,7 +22,7 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.shopListChanged.observe(this) {
-            shopListAdapter.shopList = it
+            shopListAdapter.submitList(it)
             Log.d(TAG, it.toString())
         }
 
@@ -64,7 +63,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val item = shopListAdapter.shopList[viewHolder.adapterPosition]
+                val item = shopListAdapter.currentList[viewHolder.adapterPosition]
                 viewModel.removeShopItem(item.id)
             }
 
@@ -87,6 +86,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val TAG = "TAG_MAIN_VIEW_MODEL"
+        private const val TAG = "TAG_MAIN_ACTIVITY"
     }
 }
