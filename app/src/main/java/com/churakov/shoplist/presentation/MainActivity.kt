@@ -1,10 +1,7 @@
 package com.churakov.shoplist.presentation
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
-import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -33,7 +30,7 @@ class MainActivity : AppCompatActivity() {
 
         floatingButton = findViewById(R.id.shopListFloatingButton)
         floatingButton.setOnClickListener {
-            val intent = Intent(this, ShopItemActivity::class.java)
+            val intent = ShopItemActivity.newIntentAddItem(this)
             startActivity(intent)
         }
 
@@ -86,7 +83,8 @@ class MainActivity : AppCompatActivity() {
     private fun setupOnClickListener() {
         shopListAdapter.onShopItemClickListener = {
             Log.d(TAG, it.toString())
-
+            val intent = ShopItemActivity.newIntentEditItem(this, it.id)
+            startActivity(intent)
         }
     }
 
