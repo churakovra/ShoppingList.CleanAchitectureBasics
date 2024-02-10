@@ -1,17 +1,22 @@
 package com.churakov.shoplist.presentation
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.churakov.shoplist.R
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var shopListAdapter: ShopListAdapter
     private lateinit var viewModel: MainViewModel
+    private lateinit var floatingButton: FloatingActionButton
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,6 +29,12 @@ class MainActivity : AppCompatActivity() {
         viewModel.shopListChanged.observe(this) {
             shopListAdapter.submitList(it)
             Log.d(TAG, it.toString())
+        }
+
+        floatingButton = findViewById(R.id.shopListFloatingButton)
+        floatingButton.setOnClickListener {
+            val intent = Intent(this, ShopItemActivity::class.java)
+            startActivity(intent)
         }
 
 
