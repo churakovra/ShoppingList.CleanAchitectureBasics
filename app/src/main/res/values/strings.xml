@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">ShoppingList</string>
+    <string name="floating_button_descr">button that opens new screen to add new item is shopping list</string>
+    <string name="recycled">recycled</string>
+    <string name="hint_value">Value</string>
+    <string name="hint_amount">Amount</string>
+    <string name="save">save</string>
+    <string name="value_shop_item_error_message">Item is empty. Please type something</string>
+    <string name="amount_shop_item_error_message">Amount is empty. Please type something</string>
 </resources>
