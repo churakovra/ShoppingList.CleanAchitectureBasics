@@ -8,7 +8,6 @@ import android.text.TextWatcher
 import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import com.churakov.shoplist.R
 import com.churakov.shoplist.domain.ShopItem
@@ -34,109 +33,105 @@ class ShopItemActivity : AppCompatActivity() {
         shopItemViewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
         initViews()
 
-        Log.d(TAG, "$itemId")
+        launchCorrectMode()
 
-        when (screenMode) {
-            EXTRA_MODE_ADD -> {
-                setupAddMode()
-            }
-
-            EXTRA_MODE_EDIT -> {
-                setupEditMode()
-            }
-        }
+        setupErrorInputValue()
+        setupErrorInputAmount()
+        resetValueInputError()
+        resetAmountInputError()
+        setupCloseScreenObserver()
 
 
     }
 
+    private fun launchCorrectMode() {
+        when (screenMode) {
+            EXTRA_MODE_ADD -> setupAddMode()
+            EXTRA_MODE_EDIT -> setupEditMode()
+        }
+    }
+
     private fun setupEditMode() {
+        observeShopItem()
+        setupButtonClick(screenMode)
+    }
+
+    private fun setupAddMode() {
+        setupButtonClick(screenMode)
+    }
+
+    private fun observeShopItem() {
+        shopItemViewModel.getShopItem(itemId)
         shopItemViewModel.shopItem.observe(this) {
             valueTextInput.setText(it.value)
             amountTextInput.setText(it.amount)
         }
-        shopItemViewModel.getShopItem(itemId)
+    }
 
+    private fun setupErrorInputValue() {
         shopItemViewModel.errorInputValue.observe(this) {
-            if (it) {
-                valueTextInputLayout.error = ContextCompat.getString(
-                    this,
-                    R.string.value_shop_item_error_message
-                )
-                valueTextInput.addTextChangedListener(object : TextWatcher {
-                    override fun beforeTextChanged(
-                        s: CharSequence?,
-                        start: Int,
-                        count: Int,
-                        after: Int
-                    ) {
-
-                    }
-
-                    override fun onTextChanged(
-                        s: CharSequence?,
-                        start: Int,
-                        before: Int,
-                        count: Int
-                    ) {
-                        shopItemViewModel.resetErrorInputValue()
-                    }
-
-                    override fun afterTextChanged(s: Editable?) {
-
-                    }
-                })
+            val message = if (it) {
+                getString(R.string.value_shop_item_error_message)
             } else {
-                valueTextInputLayout.error = null
+                null
             }
-        }
-
-        shopItemViewModel.errorInputAmount.observe(this) {
-            if (it) {
-                amountTextInputLayout.error = ContextCompat.getString(
-                    this,
-                    R.string.amount_shop_item_error_message
-                )
-                amountTextInput.addTextChangedListener(object : TextWatcher {
-                    override fun beforeTextChanged(
-                        s: CharSequence?,
-                        start: Int,
-                        count: Int,
-                        after: Int
-                    ) {
-
-                    }
-
-                    override fun onTextChanged(
-                        s: CharSequence?,
-                        start: Int,
-                        before: Int,
-                        count: Int
-                    ) {
-                        shopItemViewModel.resetErrorInputAmount()
-                    }
-
-                    override fun afterTextChanged(s: Editable?) {
-
-                    }
-                })
-            } else {
-                valueTextInputLayout.error = null
-            }
-        }
-
-
-        shopItemSaveButton.setOnClickListener {
-            val changedValue = valueTextInput.text.toString()
-            val changedAmount = amountTextInput.text.toString()
-
-            Log.d(TAG, "Item values: $changedValue, $changedAmount")
-
-            shopItemViewModel.editShopItem(changedValue, changedAmount)
+            valueTextInputLayout.error = message
         }
     }
 
-    private fun setupAddMode() {
-        TODO("Not yet implemented")
+    private fun setupErrorInputAmount() {
+        shopItemViewModel.errorInputAmount.observe(this) {
+            val message = if (it) {
+                getString(R.string.amount_shop_item_error_message)
+            } else {
+                null
+            }
+            amountTextInputLayout.error = message
+        }
+    }
+
+    private fun resetValueInputError() {
+        valueTextInput.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                shopItemViewModel.resetErrorInputValue()
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
+
+    private fun resetAmountInputError() {
+        amountTextInput.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                shopItemViewModel.resetErrorInputAmount()
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+    }
+
+    private fun setupCloseScreenObserver() {
+        shopItemViewModel.ableToCloseScreen.observe(this) {
+            finish()
+        }
+    }
+
+    private fun setupButtonClick(mode: String) {
+        shopItemSaveButton.setOnClickListener {
+            val itemValue = valueTextInput.text?.toString()
+            val itemAmount = amountTextInput.text?.toString()
+
+            Log.d(TAG, "Item values: $itemValue, $itemAmount")
+
+            when (mode) {
+                EXTRA_MODE_ADD -> shopItemViewModel.addShopItem(itemValue, itemAmount)
+                EXTRA_MODE_EDIT -> shopItemViewModel.editShopItem(itemValue, itemAmount)
+            }
+        }
     }
 
     private fun parseIntent() {
@@ -191,7 +186,6 @@ class ShopItemActivity : AppCompatActivity() {
 
         private const val TAG = "ShopItemActivity"
         private const val SCREEN_MODE_UNDEFINED = ""
-        private const val ERROR_EMPTY = ""
 
     }
 }
