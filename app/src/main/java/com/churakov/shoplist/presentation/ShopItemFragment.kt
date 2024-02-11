@@ -1,7 +1,5 @@
 package com.churakov.shoplist.presentation
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -190,22 +188,6 @@ class ShopItemFragment : Fragment() {
                     putInt(EXTRA_ITEM_ID, itemId)
                 }
             }
-        }
-
-        fun newIntentEditItem(
-            context: Context,
-            itemId: Int
-        ): Intent {
-            val intent = Intent(context, ShopItemActivity::class.java)
-            intent.putExtra(EXTRA_MODE_TYPE, EXTRA_MODE_EDIT)
-            intent.putExtra(EXTRA_ITEM_ID, itemId)
-            return intent
-        }
-
-        fun newIntentAddItem(context: Context): Intent {
-            val intent = Intent(context, ShopItemActivity::class.java)
-            intent.putExtra(EXTRA_MODE_TYPE, EXTRA_MODE_ADD)
-            return intent
         }
 
         private const val EXTRA_ITEM_ID = "extra_item_id"
