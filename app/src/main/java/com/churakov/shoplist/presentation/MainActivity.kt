@@ -2,18 +2,21 @@ package com.churakov.shoplist.presentation
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.churakov.shoplist.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditFinishedListener {
 
     private lateinit var shopListAdapter: ShopListAdapter
     private lateinit var viewModel: MainViewModel
     private lateinit var floatingButton: FloatingActionButton
+    private var shopItemContainer: FragmentContainerView? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,11 +33,26 @@ class MainActivity : AppCompatActivity() {
 
         floatingButton = findViewById(R.id.shopListFloatingButton)
         floatingButton.setOnClickListener {
-            val intent = ShopItemActivity.newIntentAddItem(this)
-            startActivity(intent)
+            if (shopItemContainer == null) {
+                val intent = ShopItemActivity.newIntentAddItem(this)
+                startActivity(intent)
+            } else {
+                val fragment = ShopItemFragment.newInstanceAdd()
+                launchFragment(fragment)
+            }
         }
 
+        shopItemContainer = findViewById(R.id.shopItemFragmentContainer)
 
+    }
+
+    override fun onEditFinished() {
+        Toast.makeText(
+            this,
+            "Success!",
+            Toast.LENGTH_SHORT
+        ).show()
+        supportFragmentManager.popBackStack()
     }
 
     private fun setupRecyclerView() {
@@ -82,10 +100,22 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupOnClickListener() {
         shopListAdapter.onShopItemClickListener = {
-            Log.d(TAG, it.toString())
-            val intent = ShopItemActivity.newIntentEditItem(this, it.id)
-            startActivity(intent)
+            if (shopItemContainer == null) {
+                val intent = ShopItemActivity.newIntentEditItem(this, it.id)
+                startActivity(intent)
+            } else {
+                val fragment = ShopItemFragment.newInstanceEdit(it.id)
+                launchFragment(fragment)
+            }
         }
+    }
+
+    private fun launchFragment(fragment: ShopItemFragment) {
+        supportFragmentManager.popBackStack()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.shopItemFragmentContainer, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun setupOnLongClickListener() {
