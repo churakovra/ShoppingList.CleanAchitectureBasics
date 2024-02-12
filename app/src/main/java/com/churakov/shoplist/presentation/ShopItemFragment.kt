@@ -1,5 +1,6 @@
 package com.churakov.shoplist.presentation
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -27,6 +28,15 @@ class ShopItemFragment : Fragment() {
 
     private var screenMode: String = SCREEN_MODE_UNDEFINED
     private var itemId: Int  = ShopItem.UNDEFINED_ID
+
+    private lateinit var onEditFinishedListener: OnEditFinishedListener
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnEditFinishedListener) {
+            onEditFinishedListener = context
+        } else throw RuntimeException("Activity mus implement OnEditFinishedListener")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -127,7 +137,7 @@ class ShopItemFragment : Fragment() {
 
     private fun setupCloseScreenObserver() {
         shopItemViewModel.ableToCloseScreen.observe(viewLifecycleOwner) {
-            activity?.onBackPressed()
+            onEditFinishedListener.onEditFinished()
         }
     }
 
@@ -169,6 +179,10 @@ class ShopItemFragment : Fragment() {
         shopItemSaveButton = view.findViewById(R.id.shopItemSaveButton)
         valueTextInputLayout = view.findViewById(R.id.valueTextInputLayout)
         amountTextInputLayout = view.findViewById(R.id.amountTextInputLayout)
+    }
+
+    interface OnEditFinishedListener {
+        fun onEditFinished()
     }
 
     companion object {

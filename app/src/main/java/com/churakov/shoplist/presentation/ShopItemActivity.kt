@@ -3,11 +3,12 @@ package com.churakov.shoplist.presentation
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.churakov.shoplist.R
 import com.churakov.shoplist.domain.ShopItem
 
-class ShopItemActivity : AppCompatActivity() {
+class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditFinishedListener {
 
     private var itemId = ShopItem.UNDEFINED_ID
     private var screenMode = SCREEN_MODE_UNDEFINED
@@ -19,6 +20,15 @@ class ShopItemActivity : AppCompatActivity() {
         if (savedInstanceState == null){
             launchCorrectMode()
         }
+    }
+
+    override fun onEditFinished() {
+        Toast.makeText(
+            this,
+            "Success!",
+            Toast.LENGTH_SHORT
+        ).show()
+        finish()
     }
 
     private fun launchCorrectMode() {
