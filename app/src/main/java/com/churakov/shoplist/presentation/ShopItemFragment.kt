@@ -127,7 +127,7 @@ class ShopItemFragment : Fragment() {
 
     private fun setupCloseScreenObserver() {
         shopItemViewModel.ableToCloseScreen.observe(viewLifecycleOwner) {
-            activity?.finish()
+            activity?.onBackPressed()
         }
     }
 

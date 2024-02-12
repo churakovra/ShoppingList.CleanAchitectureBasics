@@ -15,11 +15,10 @@ class ShopItemActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_shop_item)
-
         parseIntent()
-        launchCorrectMode()
-
-
+        if (savedInstanceState == null){
+            launchCorrectMode()
+        }
     }
 
     private fun launchCorrectMode() {
@@ -33,94 +32,10 @@ class ShopItemActivity : AppCompatActivity() {
             }
         }
         supportFragmentManager.beginTransaction()
-            .add(R.id.shopItemFragmentContainer, fragment)
+            .replace(R.id.shopItemFragmentContainer, fragment)
             .commit()
     }
 
-    //
-//    private fun setupEditMode() {
-//        observeShopItem()
-//        setupButtonClick(screenMode)
-//    }
-//
-//    private fun setupAddMode() {
-//        setupButtonClick(screenMode)
-//    }
-//
-//    private fun observeShopItem() {
-//        shopItemViewModel.getShopItem(itemId)
-//        shopItemViewModel.shopItem.observe(this) {
-//            valueTextInput.setText(it.value)
-//            amountTextInput.setText(it.amount)
-//        }
-//    }
-//
-//    private fun setupErrorInputValue() {
-//        shopItemViewModel.errorInputValue.observe(this) {
-//            val message = if (it) {
-//                getString(R.string.value_shop_item_error_message)
-//            } else {
-//                null
-//            }
-//            valueTextInputLayout.error = message
-//        }
-//    }
-//
-//    private fun setupErrorInputAmount() {
-//        shopItemViewModel.errorInputAmount.observe(this) {
-//            val message = if (it) {
-//                getString(R.string.amount_shop_item_error_message)
-//            } else {
-//                null
-//            }
-//            amountTextInputLayout.error = message
-//        }
-//    }
-//
-//    private fun resetValueInputError() {
-//        valueTextInput.addTextChangedListener(object : TextWatcher {
-//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-//
-//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//                shopItemViewModel.resetErrorInputValue()
-//            }
-//
-//            override fun afterTextChanged(s: Editable?) {}
-//        })
-//    }
-//
-//    private fun resetAmountInputError() {
-//        amountTextInput.addTextChangedListener(object : TextWatcher {
-//            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-//
-//            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//                shopItemViewModel.resetErrorInputAmount()
-//            }
-//
-//            override fun afterTextChanged(s: Editable?) {}
-//        })
-//    }
-//
-//    private fun setupCloseScreenObserver() {
-//        shopItemViewModel.ableToCloseScreen.observe(this) {
-//            finish()
-//        }
-//    }
-//
-//    private fun setupButtonClick(mode: String) {
-//        shopItemSaveButton.setOnClickListener {
-//            val itemValue = valueTextInput.text?.toString()
-//            val itemAmount = amountTextInput.text?.toString()
-//
-//            Log.d(TAG, "Item values: $itemValue, $itemAmount")
-//
-//            when (mode) {
-//                EXTRA_MODE_ADD -> shopItemViewModel.addShopItem(itemValue, itemAmount)
-//                EXTRA_MODE_EDIT -> shopItemViewModel.editShopItem(itemValue, itemAmount)
-//            }
-//        }
-//    }
-//
     private fun parseIntent() {
         if (!intent.hasExtra(EXTRA_MODE_TYPE)) {
             throw RuntimeException("Intent has no screen mode")
@@ -138,14 +53,6 @@ class ShopItemActivity : AppCompatActivity() {
             itemId = intent.getIntExtra(EXTRA_ITEM_ID, ShopItem.UNDEFINED_ID)
         }
     }
-//
-//    private fun initViews() {
-//        valueTextInput = findViewById(R.id.valueTextInput)
-//        amountTextInput = findViewById(R.id.amountTextInput)
-//        shopItemSaveButton = findViewById(R.id.shopItemSaveButton)
-//        valueTextInputLayout = findViewById(R.id.valueTextInputLayout)
-//        amountTextInputLayout = findViewById(R.id.amountTextInputLayout)
-//    }
 
     companion object {
         fun newIntentEditItem(
@@ -169,7 +76,6 @@ class ShopItemActivity : AppCompatActivity() {
         private const val EXTRA_MODE_ADD = "extra_mode_add"
         private const val EXTRA_MODE_EDIT = "extra_mode_edit"
 
-        private const val TAG = "ShopItemActivity"
         private const val SCREEN_MODE_UNDEFINED = ""
 
     }
