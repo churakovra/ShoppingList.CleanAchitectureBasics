@@ -1,19 +1,23 @@
 package com.churakov.shoplist.presentation
 
-import android.content.Context
-import android.content.Intent
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.churakov.shoplist.data.ShopListRepositoryImpl
 import com.churakov.shoplist.domain.AddShopItemUseCase
 import com.churakov.shoplist.domain.EditShopItemUseCase
 import com.churakov.shoplist.domain.GetShopItemUseCase
 import com.churakov.shoplist.domain.ShopItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
-class ShopItemViewModel : ViewModel() {
+class ShopItemViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repositoryImpl = ShopListRepositoryImpl
+    private val repositoryImpl = ShopListRepositoryImpl(application)
 
     private val addShopItemUseCase = AddShopItemUseCase(repositoryImpl)
     private val editShopItemUseCase = EditShopItemUseCase(repositoryImpl)
@@ -39,9 +43,11 @@ class ShopItemViewModel : ViewModel() {
         val amount = parseAmount(itemAmount)
         val fieldsValid = validateInput(value, amount)
         if (fieldsValid) {
-            val shopItem = ShopItem(value, amount.toString(), true)
-            addShopItemUseCase.addShopItem(shopItem)
-            finishWork()
+            viewModelScope.launch {
+                val shopItem = ShopItem(value, amount.toString(), true)
+                addShopItemUseCase.addShopItem(shopItem)
+                finishWork()
+            }
         }
     }
 
@@ -51,17 +57,21 @@ class ShopItemViewModel : ViewModel() {
         val fieldsValid = validateInput(value, amount)
         if (fieldsValid) {
             _shopItem.value?.let {
-                val oldShopItem = it
-                val (_, _, enabled, id) = oldShopItem
-                val newShopItem = ShopItem(value, amount.toString(), enabled, id)
-                editShopItemUseCase.editShopItem(newShopItem)
-                finishWork()
+                viewModelScope.launch {
+                    val oldShopItem = it
+                    val (_, _, enabled, id) = oldShopItem
+                    val newShopItem = ShopItem(value, amount.toString(), enabled, id)
+                    editShopItemUseCase.editShopItem(newShopItem)
+                    finishWork()
+                }
             }
         }
     }
 
     fun getShopItem(id: Int) {
-        _shopItem.value = getShopItemUseCase.getShopItem(id)
+        viewModelScope.launch {
+            _shopItem.value = getShopItemUseCase.getShopItem(id)
+        }
     }
 
     private fun parseValue(value: String?): String {

@@ -1,18 +1,24 @@
 package com.churakov.shoplist.presentation
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.churakov.shoplist.data.ShopListRepositoryImpl
 import com.churakov.shoplist.domain.EditShopItemUseCase
 import com.churakov.shoplist.domain.GetShopListUseCase
 import com.churakov.shoplist.domain.RemoveShopItemUseCase
 import com.churakov.shoplist.domain.ShopItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 
 // not AndroidViewModel(application) because context is not necessary
-class MainViewModel : ViewModel() {
+class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     // incorrect way. Should use dependency injection
-    private val repository = ShopListRepositoryImpl
+    private val repository = ShopListRepositoryImpl(application)
 
     private val getShopListUseCase = GetShopListUseCase(repository)
     private val removeShopItemUseCase = RemoveShopItemUseCase(repository)
@@ -21,11 +27,17 @@ class MainViewModel : ViewModel() {
     val shopListChanged = getShopListUseCase.getShopList()
 
     fun removeShopItem(id: Int){
-        removeShopItemUseCase.removeShopItem(id)
+        viewModelScope.launch {
+            removeShopItemUseCase.removeShopItem(id)
+        }
+
     }
 
     fun changeEnableState(item: ShopItem){
-        val newShopItem = item.copy(enabled = !item.enabled)
-        editShopItemUseCase.editShopItem(newShopItem)
+        viewModelScope.launch {
+            val newShopItem = item.copy(enabled = !item.enabled)
+            editShopItemUseCase.editShopItem(newShopItem)
+        }
+
     }
 }
