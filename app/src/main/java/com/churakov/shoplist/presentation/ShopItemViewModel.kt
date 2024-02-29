@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.churakov.shoplist.data.ShopListRepositoryImpl
 import com.churakov.shoplist.domain.AddShopItemUseCase
 import com.churakov.shoplist.domain.EditShopItemUseCase
@@ -21,8 +22,6 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
     private val addShopItemUseCase = AddShopItemUseCase(repositoryImpl)
     private val editShopItemUseCase = EditShopItemUseCase(repositoryImpl)
     private val getShopItemUseCase = GetShopItemUseCase(repositoryImpl)
-
-    private val scope = CoroutineScope(Dispatchers.IO)
 
     private val _shopItem = MutableLiveData<ShopItem>()
     val shopItem: LiveData<ShopItem>
@@ -44,7 +43,7 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
         val amount = parseAmount(itemAmount)
         val fieldsValid = validateInput(value, amount)
         if (fieldsValid) {
-            scope.launch {
+            viewModelScope.launch {
                 val shopItem = ShopItem(value, amount.toString(), true)
                 addShopItemUseCase.addShopItem(shopItem)
                 finishWork()
@@ -58,7 +57,7 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
         val fieldsValid = validateInput(value, amount)
         if (fieldsValid) {
             _shopItem.value?.let {
-                scope.launch {
+                viewModelScope.launch {
                     val oldShopItem = it
                     val (_, _, enabled, id) = oldShopItem
                     val newShopItem = ShopItem(value, amount.toString(), enabled, id)
@@ -70,7 +69,7 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
     }
 
     fun getShopItem(id: Int) {
-        scope.launch {
+        viewModelScope.launch {
             _shopItem.value = getShopItemUseCase.getShopItem(id)
         }
     }
@@ -109,10 +108,5 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
 
     fun resetErrorInputAmount() {
         _errorInputAmount.value = false
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        scope.cancel()
     }
 }

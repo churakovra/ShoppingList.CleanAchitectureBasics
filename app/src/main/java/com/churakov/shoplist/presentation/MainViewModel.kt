@@ -2,6 +2,7 @@ package com.churakov.shoplist.presentation
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.churakov.shoplist.data.ShopListRepositoryImpl
 import com.churakov.shoplist.domain.EditShopItemUseCase
 import com.churakov.shoplist.domain.GetShopListUseCase
@@ -23,27 +24,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val removeShopItemUseCase = RemoveShopItemUseCase(repository)
     private val editShopItemUseCase = EditShopItemUseCase(repository)
 
-    private val scope = CoroutineScope(Dispatchers.IO)
-
     val shopListChanged = getShopListUseCase.getShopList()
 
     fun removeShopItem(id: Int){
-        scope.launch {
+        viewModelScope.launch {
             removeShopItemUseCase.removeShopItem(id)
         }
 
     }
 
     fun changeEnableState(item: ShopItem){
-        scope.launch {
+        viewModelScope.launch {
             val newShopItem = item.copy(enabled = !item.enabled)
             editShopItemUseCase.editShopItem(newShopItem)
         }
 
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        scope.cancel()
     }
 }

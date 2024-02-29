@@ -28,7 +28,7 @@ abstract class ShopListDatabase: RoomDatabase() {
                     application.applicationContext,
                     ShopListDatabase::class.java,
                     DATABASE_NAME
-                ).allowMainThreadQueries().build()
+                ).build()
                 INSTANCE = db
                 return db
             }
