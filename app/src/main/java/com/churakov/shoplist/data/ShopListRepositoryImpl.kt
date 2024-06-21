@@ -10,7 +10,7 @@ import kotlin.random.Random
 object ShopListRepositoryImpl: ShopListRepository {
 
     private val shoppingListLD = MutableLiveData<List<ShopItem>>()
-    private val shoppingList = mutableListOf<ShopItem>()
+    private val shoppingList = sortedSetOf<ShopItem>({o1, o2 -> o1.id.compareTo(o2.id)})
     private var autoIncrementId = 0
 
     init {
@@ -27,8 +27,8 @@ object ShopListRepositoryImpl: ShopListRepository {
         updateList()
     }
 
-    override fun removeShopItem(id: Int) {
-        shoppingList.removeAt(id)
+    override fun removeShopItem(shopItem: ShopItem) {
+        shoppingList.remove(shopItem)
         updateList()
     }
 

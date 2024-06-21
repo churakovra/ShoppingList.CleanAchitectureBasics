@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">ShoppingList</string>
+    <string name="add_shop_item_floating_button">add shop item floating button</string>
+    <string name="juice">Juice</string>
+    <string name="item_count_5">5</string>
 </resources>

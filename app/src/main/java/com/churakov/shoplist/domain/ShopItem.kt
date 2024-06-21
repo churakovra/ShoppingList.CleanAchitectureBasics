@@ -2,7 +2,7 @@ package com.churakov.shoplist.domain
 
 data class ShopItem(
     val value: String,
-    val amount: String,
+    val amount: Int,
     val signed: Boolean,
     var id: Int = UNDEFINED_ID
 ) {
