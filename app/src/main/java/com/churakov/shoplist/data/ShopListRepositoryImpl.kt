@@ -3,11 +3,18 @@ package com.churakov.shoplist.data
 import com.churakov.shoplist.domain.ShopItem
 import com.churakov.shoplist.domain.ShopListRepository
 import java.lang.RuntimeException
+import kotlin.random.Random
 
 object ShopListRepositoryImpl: ShopListRepository {
 
     private val shoppingList = mutableListOf<ShopItem>()
     private var autoIncrementId = 0
+
+    init {
+        for (i in 0 until 10) {
+            addShopItem(ShopItem("value$i", "$i", Random.nextBoolean()))
+        }
+    }
 
     override fun addShopItem(shopItem: ShopItem) {
         if (shopItem.id == ShopItem.UNDEFINED_ID) {
