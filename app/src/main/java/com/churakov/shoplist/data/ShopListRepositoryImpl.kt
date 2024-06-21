@@ -1,5 +1,7 @@
 package com.churakov.shoplist.data
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.churakov.shoplist.domain.ShopItem
 import com.churakov.shoplist.domain.ShopListRepository
 import java.lang.RuntimeException
@@ -7,6 +9,7 @@ import kotlin.random.Random
 
 object ShopListRepositoryImpl: ShopListRepository {
 
+    private val shoppingListLD = MutableLiveData<List<ShopItem>>()
     private val shoppingList = mutableListOf<ShopItem>()
     private var autoIncrementId = 0
 
@@ -21,10 +24,12 @@ object ShopListRepositoryImpl: ShopListRepository {
             shopItem.id = autoIncrementId++
         }
         shoppingList.add(shopItem)
+        updateList()
     }
 
     override fun removeShopItem(id: Int) {
         shoppingList.removeAt(id)
+        updateList()
     }
 
     override fun editShopItem(shopItem: ShopItem) {
@@ -39,7 +44,11 @@ object ShopListRepositoryImpl: ShopListRepository {
         } ?: throw RuntimeException("item with id $id is not found")
     }
 
-    override fun getShopList(): List<ShopItem> {
-        return shoppingList.toList()
+    override fun getShopList(): LiveData<List<ShopItem>> {
+        return shoppingListLD
+    }
+
+    private fun updateList() {
+        shoppingListLD.value = shoppingList.toList()
     }
 }
