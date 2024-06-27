@@ -3,4 +3,7 @@
     <string name="add_shop_item_floating_button">add shop item floating button</string>
     <string name="juice">Juice</string>
     <string name="item_count_5">5</string>
+    <string name="save">Save</string>
+    <string name="enter_value">Enter value:</string>
+    <string name="enter_value_count">Enter value count:</string>
 </resources>

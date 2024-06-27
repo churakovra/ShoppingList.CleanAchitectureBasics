@@ -9,24 +9,51 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.SimpleOnItemTouchListener
 import com.churakov.shoplist.R
 import com.churakov.shoplist.domain.ShopItem
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var shopListAdapter: ShopListAdapter
+    private lateinit var floatingButton: FloatingActionButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        floatingButton = findViewById(R.id.addShopItemFB)
         setupRecyclerView()
+
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel.shopList.observe(this) {
             shopListAdapter.submitList(it)
+        }
+
+        floatingButton.setOnClickListener {
+            val intent = EditShopItemActivity.newIntentScreenAdd(this)
+            startActivity(intent)
         }
     }
 
     private fun setupRecyclerView() {
         val rvShopList = findViewById<RecyclerView>(R.id.shopListRV)
+        setupRvAdapter(rvShopList)
+        setupRvClickListeners()
+        setupItemTouchHelper(rvShopList)
+
+    }
+
+    private fun setupRvClickListeners() {
+        shopListAdapter.onShopItemLongClickListener = {
+            viewModel.changeEnableState(it)
+        }
+        shopListAdapter.onShopItemClickListener = {
+            val intent = EditShopItemActivity.newIntentScreenEdit(this, it.id)
+            startActivity(intent)
+        }
+    }
+
+    private fun setupRvAdapter(rvShopList: RecyclerView) {
         shopListAdapter = ShopListAdapter()
         with(rvShopList) {
             adapter = shopListAdapter
@@ -39,14 +66,6 @@ class MainActivity : AppCompatActivity() {
                 ShopListAdapter.MAX_POOL_SIZE
             )
         }
-        shopListAdapter.onShopItemLongClickListener = {
-            viewModel.changeEnableState(it)
-        }
-        shopListAdapter.onShopItemClickListener = {
-            Log.d("MainActivity", it.toString())
-        }
-        setupItemTouchHelper(rvShopList)
-
     }
 
     private fun setupItemTouchHelper(rv: RecyclerView){
