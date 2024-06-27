@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.churakov.shoplist.R
@@ -48,7 +47,7 @@ class ShopListAdapter() :
 
     class ShopItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val shopItemTitle: TextView = itemView.findViewById(R.id.shopItemTitle)
-        val shopItemCount: TextView = itemView.findViewById(R.id.shopItemCount)
+        val shopItemCount: TextView = itemView.findViewById(R.id.shopItemAmountEt)
     }
 
     //java way of creating a recyclerView clickListener

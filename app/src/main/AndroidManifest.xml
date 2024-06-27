@@ -22,7 +22,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".presentation.EditShopItemActivity"
-            android:exported="false"/>
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"/>
     </application>
 
 </manifest>

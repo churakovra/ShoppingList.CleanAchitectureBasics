@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         floatingButton.setOnClickListener {
             val intent = EditShopItemActivity.newIntentScreenAdd(this)
             startActivity(intent)
+            Log.d("EditShopItemActivity", intent.getStringExtra("extra_mode").toString())
         }
     }
 
