@@ -1,6 +1,7 @@
 package com.churakov.shoplist.presentation
 
 import android.app.Application
+import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,7 +12,7 @@ import com.churakov.shoplist.domain.EditShopItemUseCase
 import com.churakov.shoplist.domain.GetShopItemUseCase
 import com.churakov.shoplist.domain.ShopItem
 
-class EditShopItemViewModel: ViewModel() {
+class EditShopItemViewModel(private val application: Application) : AndroidViewModel(application) {
     private val shopListRepository = ShopListRepositoryImpl
     private val getShopItemUseCase = GetShopItemUseCase(shopListRepository)
     private val addShopItemUseCase = AddShopItemUseCase(shopListRepository)
@@ -27,14 +28,20 @@ class EditShopItemViewModel: ViewModel() {
         _saveShopItem.value = false
     }
 
-    fun saveShopItemAddMode(shopItem: ShopItem){
-        addShopItemUseCase.addShopItem(shopItem)
-        _saveShopItem.value = true
+    fun saveShopItemAddMode(value: String, amount: String) {
+        if (validateInput(value, amount)) {
+            val shopItem = ShopItem(value, amount.toInt(), true)
+            addShopItemUseCase.addShopItem(shopItem)
+            _saveShopItem.value = true
+        }
     }
 
-    fun saveShopItemEditMode(shopItem: ShopItem) {
-        editShopItemUseCase.editShopItem(shopItem)
-        _saveShopItem.value = true
+    fun saveShopItemEditMode(currentShopItem: ShopItem, value: String, amount: String) {
+        if (validateInput(value, amount)) {
+            val shopItem = currentShopItem.copy(value = value, amount = amount.toInt())
+            editShopItemUseCase.editShopItem(shopItem)
+            _saveShopItem.value = true
+        }
     }
 
     /*fun saveShopItem(shopItem: ShopItem, mode: String) {
@@ -50,14 +57,20 @@ class EditShopItemViewModel: ViewModel() {
         }
     }*/
 
-    fun getShopItem(shopItemId: Int){
+    fun getShopItem(shopItemId: Int) {
         val shopItem = getShopItemUseCase.getShopItem(shopItemId)
         _getShopItem.value = shopItem
     }
 
-    companion object {
-        private const val MODE_ADD = "mode_add"
-        private const val MODE_EDIT = "mode_edit"
+    private fun validateInput(label: String, value: String): Boolean {
+        if (label.isEmpty() || value.isEmpty()) {
+            Toast.makeText(
+                application.applicationContext,
+                "Fields is empty",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+        return !(label.isEmpty() || value.isEmpty())
     }
 
 }

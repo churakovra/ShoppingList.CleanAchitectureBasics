@@ -42,27 +42,18 @@ class EditShopItemActivity : AppCompatActivity() {
 
     private fun launchAddMode() {
         saveButton.setOnClickListener {
-            if (labelEditText.text.isEmpty() || amountEditText.text.isEmpty()) {
-                Toast.makeText(this, "Please, enter values", Toast.LENGTH_SHORT).show()
-            } else {
-                val (label, value) = getNewValues()
-                val shopItem = ShopItem(label, value, true)
-                viewModel.saveShopItemAddMode(shopItem)
-            }
+            val (value, amount) = getNewValues()
+            viewModel.saveShopItemAddMode(value, amount)
         }
     }
 
     private fun launchEditMode() {
         val shopItemId = intent.getIntExtra(EXTRA_SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
-        if (shopItemId == ShopItem.UNDEFINED_ID) {
-            Toast.makeText(this, "Wrong shopItemId", Toast.LENGTH_SHORT).show()
-            finish()
-        }
+        validateShopItemId(shopItemId)
         viewModel.getShopItem(shopItemId)
         saveButton.setOnClickListener {
             val (value, amount) = getNewValues()
-            val shopItem = currentShopItem.copy(value = value, amount = amount)
-            viewModel.saveShopItemEditMode(shopItem)
+            viewModel.saveShopItemEditMode(currentShopItem, value, amount)
         }
 
     }
@@ -83,16 +74,23 @@ class EditShopItemActivity : AppCompatActivity() {
         }
     }
 
-    private fun getNewValues(): Pair<String, Int> {
-        val label = labelEditText.text.trim().toString()
-        val amount = amountEditText.text.trim().toString().toInt()
-        return Pair(label, amount)
+    private fun getNewValues(): Pair<String, String> {
+        val value = labelEditText.text.trim().toString()
+        val amount = amountEditText.text.trim().toString()
+        return Pair(value, amount)
     }
 
     private fun initViews() {
         labelEditText = findViewById(R.id.shopItemLabelEt)
         amountEditText = findViewById(R.id.shopItemAmountEt)
         saveButton = findViewById(R.id.saveShopItemBt)
+    }
+
+    private fun validateShopItemId(shopItemId: Int) {
+        if (shopItemId == ShopItem.UNDEFINED_ID) {
+            Toast.makeText(this, "Wrong shopItemId", Toast.LENGTH_SHORT).show()
+            finish()
+        }
     }
 
     companion object {
