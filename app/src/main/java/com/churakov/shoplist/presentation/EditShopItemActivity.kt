@@ -3,27 +3,21 @@ package com.churakov.shoplist.presentation
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.FragmentContainerView
 import com.churakov.shoplist.R
 import com.churakov.shoplist.domain.ShopItem
 
 class EditShopItemActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: EditShopItemViewModel
-    private lateinit var labelEditText: EditText
-    private lateinit var amountEditText: EditText
-    private lateinit var saveButton: Button
-    private lateinit var currentShopItem: ShopItem
+    private lateinit var fragmentContainer: FragmentContainerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.edit_shop_item_activity)
-        initViews()
-        observeViewModel()
+
+        fragmentContainer = findViewById(R.id.editShopItemContainerView)
         launchScreen()
     }
 
@@ -41,57 +35,20 @@ class EditShopItemActivity : AppCompatActivity() {
     }
 
     private fun launchAddMode() {
-        saveButton.setOnClickListener {
-            val (value, amount) = getNewValues()
-            viewModel.saveShopItemAddMode(value, amount)
-        }
+        val fragment = EditShopItemFragment.getInstanceAddMode()
+        supportFragmentManager.beginTransaction()
+            .add(R.id.editShopItemContainerView, fragment)
+            .commit()
     }
 
     private fun launchEditMode() {
         val shopItemId = intent.getIntExtra(EXTRA_SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
-        validateShopItemId(shopItemId)
-        viewModel.getShopItem(shopItemId)
-        saveButton.setOnClickListener {
-            val (value, amount) = getNewValues()
-            viewModel.saveShopItemEditMode(currentShopItem, value, amount)
-        }
-
+        val fragment = EditShopItemFragment.getInstanceEditMode(shopItemId)
+        supportFragmentManager.beginTransaction()
+            .add(R.id.editShopItemContainerView, fragment)
+            .commit()
     }
 
-    private fun observeViewModel() {
-        viewModel = ViewModelProvider(this)[EditShopItemViewModel::class.java]
-
-        viewModel.getShopItem.observe(this) {
-            currentShopItem = it
-            labelEditText.setText(it.value)
-            amountEditText.setText(it.amount.toString())
-        }
-
-        viewModel.saveShopItem.observe(this) {
-            if (it) {
-                finish()
-            }
-        }
-    }
-
-    private fun getNewValues(): Pair<String, String> {
-        val value = labelEditText.text.trim().toString()
-        val amount = amountEditText.text.trim().toString()
-        return Pair(value, amount)
-    }
-
-    private fun initViews() {
-        labelEditText = findViewById(R.id.shopItemLabelEt)
-        amountEditText = findViewById(R.id.shopItemAmountEt)
-        saveButton = findViewById(R.id.saveShopItemBt)
-    }
-
-    private fun validateShopItemId(shopItemId: Int) {
-        if (shopItemId == ShopItem.UNDEFINED_ID) {
-            Toast.makeText(this, "Wrong shopItemId", Toast.LENGTH_SHORT).show()
-            finish()
-        }
-    }
 
     companion object {
         private const val EXTRA_SHOP_ITEM_ID = "shop_item_id"
