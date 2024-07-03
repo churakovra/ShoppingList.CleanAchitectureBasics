@@ -1,5 +1,6 @@
 package com.churakov.shoplist.presentation
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +15,8 @@ import com.churakov.shoplist.domain.ShopItem
 
 class EditShopItemFragment : Fragment() {
 
+    private lateinit var editShopItemFinished: OnEditShopItemFinished
+
     private lateinit var viewModel: EditShopItemViewModel
     private lateinit var labelEditText: EditText
     private lateinit var amountEditText: EditText
@@ -22,6 +25,15 @@ class EditShopItemFragment : Fragment() {
 
     private var screenMode: String = UNKNOWN_MODE
     private var shopItemId: Int = ShopItem.UNDEFINED_ID
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnEditShopItemFinished) {
+            editShopItemFinished = context
+        } else {
+            throw RuntimeException("Activity must implement interface OnEditShopItemFinished")
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -101,7 +113,7 @@ class EditShopItemFragment : Fragment() {
 
         viewModel.saveShopItem.observe(viewLifecycleOwner) {
             if (it) {
-                activity?.onBackPressedDispatcher?.onBackPressed()
+                editShopItemFinished.onEditShopItemFinished()
             }
         }
     }
@@ -116,6 +128,10 @@ class EditShopItemFragment : Fragment() {
         labelEditText = view.findViewById(R.id.shopItemLabelEt)
         amountEditText = view.findViewById(R.id.shopItemAmountEt)
         saveButton = view.findViewById(R.id.saveShopItemBt)
+    }
+
+    interface OnEditShopItemFinished {
+        fun onEditShopItemFinished()
     }
 
     companion object {

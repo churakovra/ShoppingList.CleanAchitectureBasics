@@ -4,12 +4,13 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentContainerView
 import com.churakov.shoplist.R
 import com.churakov.shoplist.domain.ShopItem
 
-class EditShopItemActivity : AppCompatActivity() {
+class EditShopItemActivity : AppCompatActivity(), EditShopItemFragment.OnEditShopItemFinished {
 
     private lateinit var fragmentContainer: FragmentContainerView
 
@@ -18,8 +19,20 @@ class EditShopItemActivity : AppCompatActivity() {
         setContentView(R.layout.edit_shop_item_activity)
 
         fragmentContainer = findViewById(R.id.editShopItemContainerView)
-        launchScreen()
+        if (isFirstRun(savedInstanceState)) {
+            launchScreen()
+        }
     }
+
+    override fun onEditShopItemFinished() {
+        onEditFinished()
+    }
+
+    private fun onEditFinished() {
+        finish()
+    }
+
+    private fun isFirstRun(bundle: Bundle?): Boolean = bundle == null
 
     private fun launchScreen() {
         val launchMode = intent.getStringExtra(EXTRA_SCREEN_MODE)
@@ -35,17 +48,21 @@ class EditShopItemActivity : AppCompatActivity() {
     }
 
     private fun launchAddMode() {
+        supportFragmentManager.popBackStack()
         val fragment = EditShopItemFragment.getInstanceAddMode()
         supportFragmentManager.beginTransaction()
-            .add(R.id.editShopItemContainerView, fragment)
+            .replace(R.id.editShopItemContainerView, fragment)
+            .addToBackStack(null)
             .commit()
     }
 
     private fun launchEditMode() {
+        supportFragmentManager.popBackStack()
         val shopItemId = intent.getIntExtra(EXTRA_SHOP_ITEM_ID, ShopItem.UNDEFINED_ID)
         val fragment = EditShopItemFragment.getInstanceEditMode(shopItemId)
         supportFragmentManager.beginTransaction()
-            .add(R.id.editShopItemContainerView, fragment)
+            .replace(R.id.editShopItemContainerView, fragment)
+            .addToBackStack(null)
             .commit()
     }
 
